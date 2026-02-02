@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick-Start Guide - LKW Tour Manager</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1A1A2E;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #FF6B35;
+            font-size: 32px;
+            margin-bottom: 10px;
+            border-bottom: 4px solid #FF6B35;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #004E89;
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid #004E89;
+            padding-left: 12px;
+        }
+        
+        h3 {
+            color: #1A1A2E;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #95A5A6;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .button-guide {
+            background: #F5F5F5;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .button-row {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            gap: 15px;
+        }
+        
+        .button-icon {
+            font-size: 32px;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .button-desc {
+            flex: 1;
+        }
+        
+        .button-name {
+            font-weight: 700;
+            color: #1A1A2E;
+        }
+        
+        .button-info {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .step-list li {
+            counter-increment: step-counter;
+            margin: 20px 0;
+            padding-left: 60px;
+            position: relative;
+        }
+        
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #FF6B35;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        .warning-box {
+            background: #FFF3CD;
+            border-left: 4px solid #F39C12;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .warning-box strong {
+            color: #F39C12;
+        }
+        
+        .tip-box {
+            background: #D1ECF1;
+            border-left: 4px solid #17A2B8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .tip-box strong {
+            color: #17A2B8;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .feature-card {
+            background: #F5F5F5;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .feature-card .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .feature-card h4 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #004E89;
+        }
+        
+        .feature-card p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            h2 {
+                page-break-after: avoid;
+            }
+            
+            .step-list li {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚛 LKW Tour Manager</h1>
+        <p class="subtitle">Quick-Start Guide für Seitenlader-LKW Fahrer</p>
+        
+        <h2>📱 Installation in 3 Schritten</h2>
+        <ol class="step-list">
+            <li>
+                <strong>Datei herunterladen</strong><br>
+                Die Datei <code>lkw-tour-manager.html</code> auf dein Handy/Tablet laden (per E-Mail, Cloud oder USB)
+            </li>
+            <li>
+                <strong>Im Browser öffnen</strong><br>
+                Datei antippen → "Mit Chrome öffnen" wählen
+            </li>
+            <li>
+                <strong>GPS erlauben</strong><br>
+                Popup: "Standort erlauben" → <strong>"Immer erlauben"</strong> auswählen
+            </li>
+        </ol>
+        
+        <div class="tip-box">
+            <strong>💡 Tipp:</strong> Als App installieren: Chrome-Menü → "Zum Startbildschirm hinzufügen" → App erscheint auf dem Home-Screen!
+        </div>
+        
+        <h2>🎯 Hauptfunktionen im Überblick</h2>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">🎙️</div>
+                <h4>Tour Aufzeichnen</h4>
+                <p>GPS-Route mit Tonnen-Positionen und Manövern speichern</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🧭</div>
+                <h4>Tour Navigieren</h4>
+                <p>Gespeicherte Route mit visuellen & akustischen Hinweisen abfahren</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📍</div>
+                <h4>Tonnen tracken</h4>
+                <p>Rechts, links, beide Seiten oder keine Tonnen markieren</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🔊</div>
+                <h4>Sprachausgabe</h4>
+                <p>Automatische Ansagen für Abbiegungen und Manöver</p>
+            </div>
+        </div>
+        
+        <h2>📝 Button-Übersicht: Tour Aufzeichnung</h2>
+        
+        <h3>Pflicht-Aktionen</h3>
+        <div class="button-guide">
+            <div class="button-row">
+                <div class="button-icon">🟢</div>
+                <div class="button-desc">
+                    <div class="button-name">Touranfang</div>
+                    <div class="button-info">Startet die GPS-Aufzeichnung</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">🔴</div>
+                <div class="button-desc">
+                    <div class="button-name">Tourende</div>
+                    <div class="button-info">Beendet und speichert die Tour</div>
+                </div>
+            </div>
+        </div>
+        
+        <h3>Tonnen-Position (immer eine aktiv)</h3>
+        <div class="button-guide">
+            <div class="button-row">
+                <div class="button-icon">🟦</div>
+                <div class="button-desc">
+                    <div class="button-name">Tonnen Rechts</div>
+                    <div class="button-info">Standard für Seitenlader</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">🟥</div>
+                <div class="button-desc">
+                    <div class="button-name">Tonnen Links</div>
+                    <div class="button-info">Wenden erforderlich</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">🟪</div>
+                <div class="button-desc">
+                    <div class="button-name">Beide Seiten</div>
+                    <div class="button-info">Tonnen beidseitig</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">⚪</div>
+                <div class="button-desc">
+                    <div class="button-name">Keine Tonnen</div>
+                    <div class="button-info">Durchfahrt ohne Tonnen</div>
+                </div>
+            </div>
+        </div>
+        
+        <h3>Fahrmanöver (punktgenau)</h3>
+        <div class="button-guide">
+            <div class="button-row">
+                <div class="button-icon">↩️</div>
+                <div class="button-desc">
+                    <div class="button-name">Links abbiegen</div>
+                    <div class="button-info">Markiert Kreuzung</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">↪️</div>
+                <div class="button-desc">
+                    <div class="button-name">Rechts abbiegen</div>
+                    <div class="button-info">Markiert Kreuzung</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">🔄</div>
+                <div class="button-desc">
+                    <div class="button-name">Hier wenden</div>
+                    <div class="button-info">Wendepunkt setzen</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">⬅️</div>
+                <div class="button-desc">
+                    <div class="button-name">Rückwärts Fahrt</div>
+                    <div class="button-info">Start Rückwärtsgang</div>
+                </div>
+            </div>
+            <div class="button-row">
+                <div class="button-icon">➡️</div>
+                <div class="button-desc">
+                    <div class="button-name">Ende Rückwärts</div>
+                    <div class="button-info">Ende Rückwärtsgang</div>
+                </div>
+            </div>
+        </div>
+        
+        <h3>Korrektur</h3>
+        <div class="button-guide">
+            <div class="button-row">
+                <div class="button-icon">↶</div>
+                <div class="button-desc">
+                    <div class="button-name">Rückgängig</div>
+                    <div class="button-info">Letzte Aktion entfernen</div>
+                </div>
+            </div>
+        </div>
+        
+        <h2>🚀 Erste Tour in 5 Schritten</h2>
+        
+        <ol class="step-list">
+            <li>
+                <strong>Tour erstellen</strong><br>
+                App öffnen → "Neue Tour aufzeichnen" → Name + Typ eingeben (Ungerade/Gerade Woche) → "Tour starten"
+            </li>
+            <li>
+                <strong>Am Startpunkt warten</strong><br>
+                Warten bis GPS-Status grün wird (< 10m Genauigkeit)
+            </li>
+            <li>
+                <strong>Tour beginnen</strong><br>
+                🟢 "Touranfang" drücken → Losfahren → 🟦 "Rechts" drücken
+            </li>
+            <li>
+                <strong>Während der Fahrt</strong><br>
+                Bei Änderungen Tonnen-Button drücken<br>
+                Bei Manövern entsprechenden Button drücken (BEVOR du abbiegst!)
+            </li>
+            <li>
+                <strong>Tour beenden</strong><br>
+                Am Ziel angekommen → 🔴 "Tourende" drücken → Tour wird gespeichert
+            </li>
+        </ol>
+        
+        <div class="warning-box">
+            <strong>⚠️ Wichtig:</strong> Immer "Tourende" drücken, sonst wird die Tour NICHT gespeichert!
+        </div>
+        
+        <h2>🧭 Tour Navigation</h2>
+        
+        <h3>So navigierst du eine gespeicherte Tour:</h3>
+        <ol class="step-list">
+            <li>
+                <strong>Tour auswählen</strong><br>
+                App öffnen → "Tour abfahren" → Gewünschte Tour antippen
+            </li>
+            <li>
+                <strong>Optional: Zum Start navigieren</strong><br>
+                "Zum Touranfang navigieren?" → Ja/Nein
+            </li>
+            <li>
+                <strong>Blauer Linie folgen</strong><br>
+                Durchgezogen = nächste 250m<br>
+                Gestrichelt = weiterer Verlauf<br>
+                Grau = bereits gefahren
+            </li>
+            <li>
+                <strong>Hinweise beachten</strong><br>
+                Akustisch: Sprachansagen<br>
+                Optisch: Symbole oben
+            </li>
+        </ol>
+        
+        <h2>🛠️ Häufige Probleme</h2>
+        
+        <div class="feature-grid" style="grid-template-columns: 1fr;">
+            <div class="feature-card" style="text-align: left;">
+                <strong>❌ GPS findet keine Position</strong>
+                <p>✅ Draußen im Freien testen<br>
+                ✅ Flugmodus aus/ein<br>
+                ✅ Gerät neu starten</p>
+            </div>
+            <div class="feature-card" style="text-align: left;">
+                <strong>❌ Ton funktioniert nicht</strong>
+                <p>✅ Lautstärke erhöhen<br>
+                ✅ Nicht-Stören-Modus prüfen<br>
+                ✅ Browser-Berechtigungen prüfen</p>
+            </div>
+            <div class="feature-card" style="text-align: left;">
+                <strong>❌ Tour nicht gespeichert</strong>
+                <p>✅ "Tourende" drücken!<br>
+                ✅ Privat-Modus deaktivieren<br>
+                ✅ Genug Speicherplatz</p>
+            </div>
+        </div>
+        
+        <h2>✅ Checkliste vor der Fahrt</h2>
+        
+        <div class="button-guide">
+            <div style="line-height: 2;">
+                ☐ GPS-Status ist grün (< 10m)<br>
+                ☐ Akku mindestens 50%<br>
+                ☐ Bildschirm-Helligkeit erhöht<br>
+                ☐ Gerätehalterung sicher befestigt<br>
+                ☐ Lautstärke auf 70-80%<br>
+                ☐ Tour-Name eingegeben<br>
+                ☐ Tour-Typ gewählt<br>
+            </div>
+        </div>
+        
+        <div class="tip-box">
+            <strong>💡 Pro-Tipp:</strong> Beim ersten Mal auf einem Parkplatz üben! Alle Buttons einmal durchprobieren, bevor du auf echte Tour gehst.
+        </div>
+        
+        <h2>📞 Support & Feedback</h2>
+        
+        <p>Bei Fragen oder Problemen:</p>
+        <ul style="margin-left: 60px; margin-top: 10px;">
+            <li>Vollständige Dokumentation in <code>DOKUMENTATION.md</code> lesen</li>
+            <li>FAQ checken</li>
+            <li>Feedback per E-Mail senden</li>
+        </ul>
+        
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 2px solid #E0E0E0; color: #95A5A6;">
+            <strong>LKW Tour Manager v1.0</strong> | Februar 2026<br>
+            Entwickelt für Seitenlader-LKW Fahrer 🚛
+        </div>
+    </div>
+</body>
+</html>

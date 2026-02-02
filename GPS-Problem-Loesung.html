@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LKW Tour Manager - Server Anleitung</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        h1 { color: #FF6B35; margin-bottom: 10px; }
+        h2 { color: #004E89; margin-top: 30px; }
+        .method {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid #FF6B35;
+        }
+        .method h3 { margin-top: 0; color: #FF6B35; }
+        code {
+            background: #e0e0e0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .command {
+            background: #1A1A2E;
+            color: #00D9FF;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        .warning {
+            background: #FFF3CD;
+            border-left: 4px solid #F39C12;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success {
+            background: #D4EDDA;
+            border-left: 4px solid #2ECC71;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        ol { line-height: 2; }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #FF6B35;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px 10px 10px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 GPS-Zugriff Problem gelöst!</h1>
+        <p><strong>Problem:</strong> Chrome erlaubt GPS nur bei sicheren Verbindungen (HTTPS).</p>
+        
+        <div class="warning">
+            <strong>⚠️ Wichtig:</strong> Eine lokale HTML-Datei (file:///) gilt als "unsicher" - daher wird GPS blockiert!
+        </div>
+
+        <h2>✅ 3 Lösungen (Wähle eine):</h2>
+
+        <!-- Lösung 1 -->
+        <div class="method">
+            <h3>Lösung 1: Online hosten (EINFACHSTE Lösung) ⭐ EMPFOHLEN</h3>
+            <p>Lade die App kostenlos online hoch - dann funktioniert GPS sofort!</p>
+            
+            <h4>Mit GitHub Pages (100% kostenlos):</h4>
+            <ol>
+                <li>Gehe zu <a href="https://github.com" target="_blank">github.com</a> → Kostenloses Konto erstellen</li>
+                <li>Neues Repository: "lkw-tour-manager" (öffentlich)</li>
+                <li>Datei <code>lkw-tour-manager.html</code> hochladen</li>
+                <li>Umbenennen in <code>index.html</code></li>
+                <li>Settings → Pages → Source: "main" Branch → Save</li>
+                <li>Nach 1-2 Minuten: App ist online unter:<br>
+                    <code>https://DEIN-USERNAME.github.io/lkw-tour-manager/</code>
+                </li>
+            </ol>
+            
+            <div class="success">
+                ✅ Dauerhaft verfügbar<br>
+                ✅ HTTPS automatisch<br>
+                ✅ Von jedem Gerät erreichbar<br>
+                ✅ Kostenlos, keine Werbung
+            </div>
+
+            <h4>Alternative: Netlify Drop (noch einfacher):</h4>
+            <ol>
+                <li>Gehe zu <a href="https://app.netlify.com/drop" target="_blank">netlify.com/drop</a></li>
+                <li>Ziehe <code>lkw-tour-manager.html</code> in das Feld (Drag & Drop)</li>
+                <li>Fertig! Du bekommst sofort eine URL wie:<br>
+                    <code>https://random-name-12345.netlify.app</code>
+                </li>
+            </ol>
+        </div>
+
+        <!-- Lösung 2 -->
+        <div class="method">
+            <h3>Lösung 2: Chrome Flags (Nur für Tests)</h3>
+            <p>Chrome-Sicherheit temporär für lokale Dateien deaktivieren.</p>
+            
+            <div class="warning">
+                <strong>⚠️ Warnung:</strong> Nur zum Testen! Danach Einstellung wieder zurücksetzen!
+            </div>
+            
+            <h4>Schritte:</h4>
+            <ol>
+                <li>Chrome öffnen</li>
+                <li>Adressleiste eingeben: <code>chrome://flags</code></li>
+                <li>Suchen nach: <code>unsafely-treat-insecure-origin-as-secure</code></li>
+                <li>Aktivieren und eingeben: <code>file:///</code></li>
+                <li>Chrome neu starten</li>
+                <li>Datei öffnen → GPS sollte funktionieren</li>
+            </ol>
+            
+            <p><strong>Nach dem Test:</strong> Flag wieder auf "Default" setzen!</p>
+        </div>
+
+        <!-- Lösung 3 -->
+        <div class="method">
+            <h3>Lösung 3: Python Webserver (Für PC-Test)</h3>
+            <p>Lokalen Server auf deinem Computer starten.</p>
+            
+            <h4>Wenn Python installiert ist:</h4>
+            <ol>
+                <li>Öffne Terminal / Eingabeaufforderung</li>
+                <li>Navigiere zum Ordner mit der HTML-Datei:<br>
+                    <div class="command">cd C:\Pfad\zum\Ordner</div>
+                </li>
+                <li>Server starten:<br>
+                    <div class="command">python -m http.server 8000</div>
+                    oder<br>
+                    <div class="command">python3 -m http.server 8000</div>
+                </li>
+                <li>Browser öffnen: <code>http://localhost:8000/lkw-tour-manager.html</code></li>
+            </ol>
+            
+            <h4>Vom Handy aus zugreifen:</h4>
+            <ol>
+                <li>PC und Handy im gleichen WLAN</li>
+                <li>PC IP-Adresse herausfinden (z.B. 192.168.1.100)</li>
+                <li>Auf Handy: <code>http://192.168.1.100:8000/lkw-tour-manager.html</code></li>
+            </ol>
+            
+            <div class="warning">
+                <strong>⚠️ Hinweis:</strong> Auch hier kann GPS blockiert sein, da HTTP (nicht HTTPS). Lösung 1 ist besser!
+            </div>
+        </div>
+
+        <h2>🎯 Meine Empfehlung:</h2>
+        <div class="success">
+            <h3>👉 Nutze Netlify Drop oder GitHub Pages!</h3>
+            <p><strong>Vorteile:</strong></p>
+            <ul>
+                <li>✅ In 2 Minuten online</li>
+                <li>✅ HTTPS automatisch</li>
+                <li>✅ GPS funktioniert sofort</li>
+                <li>✅ Von überall erreichbar</li>
+                <li>✅ 100% kostenlos</li>
+                <li>✅ Keine Installation nötig</li>
+            </ul>
+            
+            <a href="https://app.netlify.com/drop" class="btn" target="_blank">🚀 Jetzt zu Netlify Drop</a>
+            <a href="https://github.com" class="btn" target="_blank">🚀 Zu GitHub</a>
+        </div>
+
+        <h2>❓ Welche Lösung für dich?</h2>
+        <ul style="line-height: 2;">
+            <li><strong>Schnell testen, langfristig nutzen:</strong> → Lösung 1 (Netlify/GitHub) ⭐</li>
+            <li><strong>Nur kurz testen auf PC:</strong> → Lösung 3 (Python Server)</li>
+            <li><strong>Notlösung:</strong> → Lösung 2 (Chrome Flags, unsicher)</li>
+        </ul>
+
+        <h2>📞 Brauchst du Hilfe?</h2>
+        <p>Wenn du dich für <strong>Netlify Drop</strong> entscheidest:</p>
+        <ol>
+            <li>Gehe zu <a href="https://app.netlify.com/drop" target="_blank">netlify.com/drop</a></li>
+            <li>Ziehe die <code>lkw-tour-manager.html</code> Datei in das Browserfenster</li>
+            <li>Warte 10 Sekunden</li>
+            <li>Du bekommst eine URL - speichere diese als Lesezeichen!</li>
+            <li>Öffne die URL auf deinem Handy - GPS funktioniert! 🎉</li>
+        </ol>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e0e0e0; text-align: center; color: #888;">
+            LKW Tour Manager v1.0 | Problem gelöst! 🚛✅
+        </div>
+    </div>
+</body>
+</html>
