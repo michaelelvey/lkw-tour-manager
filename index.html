@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LKW Tour Manager - Seitenlader</title>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E55A28;
+            --secondary: #004E89;
+            --accent: #00D9FF;
+            --success: #2ECC71;
+            --warning: #F39C12;
+            --danger: #E74C3C;
+            --dark: #1A1A2E;
+            --light: #F5F5F5;
+            --gray: #95A5A6;
+            
+            --ton-right: #3498DB;
+            --ton-left: #E74C3C;
+            --ton-both: #9B59B6;
+            --ton-none: #95A5A6;
+            
+            --shadow: 0 4px 12px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.25);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            touch-action: manipulation;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 12px 16px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .gps-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .gps-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .gps-good { background: var(--success); }
+        .gps-medium { background: var(--warning); }
+        .gps-bad { background: var(--danger); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Map */
+        #map {
+            height: 33vh;
+            position: relative;
+        }
+
+        /* Mode Selector */
+        .mode-selector {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .mode-selector h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .mode-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mode-btn {
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+        }
+
+        .mode-btn:active {
+            transform: scale(0.98);
+        }
+
+        .mode-btn.record {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .mode-btn.navigate {
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            color: white;
+        }
+
+        .mode-btn.list {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        /* Tour Setup */
+        .tour-setup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .tour-setup h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            margin-bottom: 24px;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Control Panel */
+        .control-panel {
+            height: 67vh;
+            background: white;
+            padding: 20px 16px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .control-section {
+            margin-bottom: 16px;
+        }
+
+        .control-section h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .button-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 20px 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-height: 100px;
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+
+        .action-btn .icon {
+            font-size: 32px;
+        }
+
+        .action-btn.start {
+            background: linear-gradient(135deg, var(--success), #27AE60);
+            color: white;
+        }
+
+        .action-btn.end {
+            background: linear-gradient(135deg, var(--danger), #C0392B);
+            color: white;
+        }
+
+        .action-btn.ton-right {
+            background: var(--ton-right);
+            color: white;
+        }
+
+        .action-btn.ton-left {
+            background: var(--ton-left);
+            color: white;
+        }
+
+        .action-btn.ton-both {
+            background: var(--ton-both);
+            color: white;
+        }
+
+        .action-btn.ton-none {
+            background: var(--ton-none);
+            color: white;
+        }
+
+        .action-btn.active {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5),
+                        0 0 0 6px currentColor;
+        }
+
+        .action-btn.maneuver {
+            background: linear-gradient(135deg, var(--secondary), #003D6B);
+            color: white;
+        }
+
+        .action-btn.undo {
+            background: var(--warning);
+            color: white;
+            grid-column: span 2;
+        }
+
+        /* Tour List */
+        .tour-list {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+            z-index: 2000;
+            max-width: 90%;
+            width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .tour-list h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+
+        .tour-item {
+            background: var(--light);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tour-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .tour-item h4 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .tour-item-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--light);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Navigation Alert */
+        .nav-alert {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1500;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .nav-alert .icon {
+            font-size: 32px;
+        }
+
+        /* Loading */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            z-index: 3000;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 16px;
+            }
+            
+            .action-btn {
+                padding: 18px 10px;
+                font-size: 14px;
+                min-height: 90px;
+            }
+            
+            .action-btn .icon {
+                font-size: 28px;
+            }
+            
+            #map {
+                height: 30vh;
+            }
+            
+            .control-panel {
+                height: 70vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🚛 LKW Tour Manager</h1>
+            <div class="gps-status">
+                <div class="gps-indicator gps-bad" id="gpsIndicator"></div>
+                <span id="gpsAccuracy">GPS lädt...</span>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div id="map"></div>
+
+        <!-- Loading -->
+        <div class="loading hidden" id="loading">
+            <div class="spinner"></div>
+            <div>Lädt...</div>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector" id="modeSelector">
+            <h2>Was möchtest du tun?</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn record" onclick="app.showTourSetup()">
+                    🎙️ Neue Tour aufzeichnen
+                </button>
+                <button class="mode-btn navigate" onclick="app.showTourList()">
+                    🧭 Tour abfahren
+                </button>
+                <button class="mode-btn list" onclick="app.showTourList()">
+                    📋 Gespeicherte Touren
+                </button>
+            </div>
+        </div>
+
+        <!-- Tour Setup -->
+        <div class="tour-setup hidden" id="tourSetup">
+            <button class="close-btn" onclick="app.showModeSelector()">✕</button>
+            <h2>Neue Tour erstellen</h2>
+            <form onsubmit="app.startRecording(event)">
+                <div class="form-group">
+                    <label>Tour Name</label>
+                    <input type="text" id="tourName" placeholder="z.B. Bezirk Nord" required>
+                </div>
+                <div class="form-group">
+                    <label>Tour Typ</label>
+                    <select id="tourType" required>
+                        <option value="">Bitte wählen...</option>
+                        <option value="ungerade">Ungerade Woche</option>
+                        <option value="gerade">Gerade Woche</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Tour starten</button>
+            </form>
+        </div>
+
+        <!-- Tour List -->
+        <div class="tour-list hidden" id="tourList">
+            <button class="close-btn" onclick="app.showModeSelector()">✕</button>
+            <h2>Gespeicherte Touren</h2>
+            <div id="tourListContent"></div>
+        </div>
+
+        <!-- Control Panel (Recording Mode) -->
+        <div class="control-panel hidden" id="recordingControls">
+            <div class="control-section">
+                <h3>Tour Steuerung</h3>
+                <div class="button-grid">
+                    <button class="action-btn start" onclick="app.markTourStart()">
+                        <span class="icon">🟢</span>
+                        Touranfang
+                    </button>
+                    <button class="action-btn end" onclick="app.markTourEnd()">
+                        <span class="icon">🔴</span>
+                        Tourende
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Tonnen Position</h3>
+                <div class="button-grid">
+                    <button class="action-btn ton-right" onclick="app.setTonPosition('right')" id="btnTonRight">
+                        <span class="icon">🟦</span>
+                        Rechts
+                    </button>
+                    <button class="action-btn ton-left" onclick="app.setTonPosition('left')" id="btnTonLeft">
+                        <span class="icon">🟥</span>
+                        Links
+                    </button>
+                    <button class="action-btn ton-both" onclick="app.setTonPosition('both')" id="btnTonBoth">
+                        <span class="icon">🟪</span>
+                        Beide Seiten
+                    </button>
+                    <button class="action-btn ton-none" onclick="app.setTonPosition('none')" id="btnTonNone">
+                        <span class="icon">⚪</span>
+                        Keine Tonnen
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Fahrmanöver</h3>
+                <div class="button-grid-3">
+                    <button class="action-btn maneuver" onclick="app.addManeuver('turn_left')">
+                        <span class="icon">↩️</span>
+                        Links
+                    </button>
+                    <button class="action-btn maneuver" onclick="app.addManeuver('turn_right')">
+                        <span class="icon">↪️</span>
+                        Rechts
+                    </button>
+                    <button class="action-btn maneuver" onclick="app.addManeuver('u_turn')">
+                        <span class="icon">🔄</span>
+                        Wenden
+                    </button>
+                    <button class="action-btn maneuver" onclick="app.addManeuver('reverse_start')">
+                        <span class="icon">⬅️</span>
+                        Rückwärts
+                    </button>
+                    <button class="action-btn maneuver" onclick="app.addManeuver('reverse_end')">
+                        <span class="icon">➡️</span>
+                        Ende Rückw.
+                    </button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <button class="action-btn undo" onclick="app.undoLastAction()">
+                    <span class="icon">↶</span>
+                    Letzte Aktion rückgängig
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Alert -->
+        <div class="nav-alert hidden" id="navAlert">
+            <span class="icon" id="navAlertIcon"></span>
+            <span id="navAlertText"></span>
+        </div>
+    </div>
+
+    <script>
+        // ==================== APP CORE ====================
+        const app = {
+            map: null,
+            currentPosition: null,
+            watchId: null,
+            mode: null, // 'recording' or 'navigating'
+            
+            // Recording data
+            currentTour: null,
+            segments: [],
+            events: [],
+            currentTonPosition: null,
+            lastSegmentPoint: null,
+            tourStarted: false,
+            
+            // Navigation data
+            activeTour: null,
+            routeLine: null,
+            currentSegmentIndex: 0,
+            
+            // Speech
+            speechEnabled: true,
+
+            init() {
+                // Initialize map (using OpenStreetMap as fallback - Mapbox requires API key)
+                this.map = L.map('map').setView([52.52, 13.405], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(this.map);
+
+                // Request GPS permission immediately with user interaction
+                // This helps on mobile devices that require user gesture
+                document.addEventListener('click', () => {
+                    if (!this.watchId && navigator.geolocation) {
+                        this.startGPSTracking();
+                    }
+                }, { once: true });
+
+                // Also try to start GPS immediately
+                this.startGPSTracking();
+                
+                // Load saved tours
+                this.loadTours();
+            },
+
+            startGPSTracking() {
+                if (!navigator.geolocation) {
+                    alert('GPS wird von deinem Gerät nicht unterstützt!');
+                    document.getElementById('gpsAccuracy').textContent = 'GPS nicht verfügbar';
+                    return;
+                }
+
+                // Show loading state
+                document.getElementById('gpsAccuracy').textContent = 'GPS wird gestartet...';
+                const indicator = document.getElementById('gpsIndicator');
+                indicator.className = 'gps-indicator gps-medium';
+
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                };
+
+                // Request permission first with getCurrentPosition (works better on mobile)
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Success - now start watching
+                        this.handleGPSUpdate(position);
+                        
+                        this.watchId = navigator.geolocation.watchPosition(
+                            (position) => this.handleGPSUpdate(position),
+                            (error) => this.handleGPSError(error),
+                            options
+                        );
+                    },
+                    (error) => {
+                        this.handleGPSError(error);
+                    },
+                    options
+                );
+            },
+
+            handleGPSUpdate(position) {
+                const { latitude, longitude, accuracy } = position.coords;
+                
+                this.currentPosition = [latitude, longitude];
+                
+                // Update GPS status
+                const indicator = document.getElementById('gpsIndicator');
+                const accuracyText = document.getElementById('gpsAccuracy');
+                
+                if (accuracy < 10) {
+                    indicator.className = 'gps-indicator gps-good';
+                    accuracyText.textContent = `GPS: ${accuracy.toFixed(0)}m ✓`;
+                } else if (accuracy < 25) {
+                    indicator.className = 'gps-indicator gps-medium';
+                    accuracyText.textContent = `GPS: ${accuracy.toFixed(0)}m`;
+                } else {
+                    indicator.className = 'gps-indicator gps-bad';
+                    accuracyText.textContent = `GPS: ${accuracy.toFixed(0)}m ⚠️`;
+                }
+
+                // Update map position
+                if (this.map && this.currentPosition) {
+                    // Add or update position marker
+                    if (!this.positionMarker) {
+                        this.positionMarker = L.circleMarker(this.currentPosition, {
+                            radius: 8,
+                            fillColor: '#FF6B35',
+                            color: '#fff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(this.map);
+                    } else {
+                        this.positionMarker.setLatLng(this.currentPosition);
+                    }
+
+                    // If recording, add to segments
+                    if (this.mode === 'recording' && this.tourStarted && this.currentTonPosition) {
+                        this.recordSegmentPoint(this.currentPosition);
+                    }
+
+                    // If navigating, check progress
+                    if (this.mode === 'navigating' && this.activeTour) {
+                        this.updateNavigation();
+                    }
+                }
+            },
+
+            handleGPSError(error) {
+                console.error('GPS Error:', error);
+                const indicator = document.getElementById('gpsIndicator');
+                const accuracyText = document.getElementById('gpsAccuracy');
+                
+                indicator.className = 'gps-indicator gps-bad';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        accuracyText.textContent = 'GPS Zugriff verweigert';
+                        alert('GPS-Berechtigung wurde verweigert!\n\nBitte erlaube den Standortzugriff in den Browser-Einstellungen:\n\n1. Chrome Menü → Einstellungen\n2. Website-Einstellungen → Standort\n3. Diese Seite erlauben');
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        accuracyText.textContent = 'GPS nicht verfügbar';
+                        alert('GPS-Position nicht verfügbar!\n\nBitte stelle sicher:\n- Du bist im Freien (nicht im Gebäude)\n- Standortdienste sind aktiviert\n- Flugmodus ist aus');
+                        break;
+                    case error.TIMEOUT:
+                        accuracyText.textContent = 'GPS Timeout';
+                        // Retry automatically
+                        setTimeout(() => {
+                            console.log('Retrying GPS...');
+                            this.startGPSTracking();
+                        }, 2000);
+                        break;
+                    default:
+                        accuracyText.textContent = 'GPS Fehler';
+                        break;
+                }
+            },
+
+            // ==================== UI NAVIGATION ====================
+            showModeSelector() {
+                this.hideAll();
+                document.getElementById('modeSelector').classList.remove('hidden');
+            },
+
+            showTourSetup() {
+                this.hideAll();
+                document.getElementById('tourSetup').classList.remove('hidden');
+            },
+
+            showTourList() {
+                this.hideAll();
+                this.renderTourList();
+                document.getElementById('tourList').classList.remove('hidden');
+            },
+
+            hideAll() {
+                document.getElementById('modeSelector').classList.add('hidden');
+                document.getElementById('tourSetup').classList.add('hidden');
+                document.getElementById('tourList').classList.add('hidden');
+                document.getElementById('recordingControls').classList.add('hidden');
+                document.getElementById('navAlert').classList.add('hidden');
+            },
+
+            // ==================== RECORDING MODE ====================
+            startRecording(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('tourName').value;
+                const type = document.getElementById('tourType').value;
+
+                this.currentTour = {
+                    id: Date.now(),
+                    name: name,
+                    type: type,
+                    created: new Date().toISOString(),
+                    segments: [],
+                    events: []
+                };
+
+                this.segments = [];
+                this.events = [];
+                this.currentTonPosition = null;
+                this.lastSegmentPoint = null;
+                this.tourStarted = false;
+
+                this.mode = 'recording';
+                this.hideAll();
+                document.getElementById('recordingControls').classList.remove('hidden');
+
+                this.speak('Tour Aufzeichnung bereit. Drücke Touranfang zum Starten.');
+            },
+
+            markTourStart() {
+                if (!this.currentPosition) {
+                    alert('Warte auf GPS Signal!');
+                    return;
+                }
+
+                this.tourStarted = true;
+                this.lastSegmentPoint = this.currentPosition;
+                
+                this.addEvent('tour_start', this.currentPosition);
+                
+                // Add start marker
+                L.marker(this.currentPosition, {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background: #2ECC71; color: white; padding: 8px; border-radius: 50%; font-size: 20px;">🟢</div>'
+                    })
+                }).addTo(this.map);
+
+                this.map.setView(this.currentPosition, 17);
+                
+                this.speak('Tour gestartet. Wähle die Position der Tonnen.');
+            },
+
+            markTourEnd() {
+                if (!this.tourStarted) {
+                    alert('Tour wurde noch nicht gestartet!');
+                    return;
+                }
+
+                this.addEvent('tour_end', this.currentPosition);
+                
+                // Add end marker
+                L.marker(this.currentPosition, {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background: #E74C3C; color: white; padding: 8px; border-radius: 50%; font-size: 20px;">🔴</div>'
+                    })
+                }).addTo(this.map);
+
+                // Save tour
+                this.currentTour.segments = this.segments;
+                this.currentTour.events = this.events;
+                this.saveTour(this.currentTour);
+
+                this.speak('Tour beendet und gespeichert.');
+                
+                setTimeout(() => {
+                    if (confirm('Tour wurde gespeichert! Zurück zum Hauptmenü?')) {
+                        this.showModeSelector();
+                    }
+                }, 1000);
+            },
+
+            setTonPosition(position) {
+                if (!this.tourStarted) {
+                    alert('Bitte erst "Touranfang" drücken!');
+                    return;
+                }
+
+                // Update UI
+                ['btnTonRight', 'btnTonLeft', 'btnTonBoth', 'btnTonNone'].forEach(id => {
+                    document.getElementById(id).classList.remove('active');
+                });
+                document.getElementById(`btnTon${position.charAt(0).toUpperCase() + position.slice(1)}`).classList.add('active');
+
+                // If changing position, close current segment
+                if (this.currentTonPosition && this.currentTonPosition !== position) {
+                    this.closeCurrentSegment();
+                }
+
+                this.currentTonPosition = position;
+                this.lastSegmentPoint = this.currentPosition;
+
+                const messages = {
+                    'right': 'Tonnen rechts',
+                    'left': 'Tonnen links',
+                    'both': 'Tonnen beidseitig',
+                    'none': 'Keine Tonnen'
+                };
+                
+                this.speak(messages[position]);
+            },
+
+            recordSegmentPoint(point) {
+                // Only record if we have a ton position set
+                if (!this.currentTonPosition || !this.lastSegmentPoint) return;
+
+                // Calculate distance from last point
+                const distance = this.calculateDistance(this.lastSegmentPoint, point);
+
+                // Only add if moved at least 5 meters
+                if (distance > 0.005) { // ~5 meters
+                    if (!this.currentSegment) {
+                        this.currentSegment = {
+                            tonPosition: this.currentTonPosition,
+                            points: [this.lastSegmentPoint]
+                        };
+                    }
+                    
+                    this.currentSegment.points.push(point);
+                    this.lastSegmentPoint = point;
+
+                    // Draw on map
+                    this.drawSegmentLine(this.currentSegment.points, this.currentTonPosition);
+                }
+            },
+
+            closeCurrentSegment() {
+                if (this.currentSegment && this.currentSegment.points.length > 1) {
+                    this.segments.push({...this.currentSegment});
+                    this.currentSegment = null;
+                }
+            },
+
+            drawSegmentLine(points, tonPosition) {
+                const colors = {
+                    'right': '#3498DB',
+                    'left': '#E74C3C',
+                    'both': '#9B59B6',
+                    'none': '#95A5A6'
+                };
+
+                L.polyline(points, {
+                    color: colors[tonPosition],
+                    weight: 5,
+                    opacity: 0.7
+                }).addTo(this.map);
+            },
+
+            addManeuver(type) {
+                if (!this.tourStarted) {
+                    alert('Bitte erst "Touranfang" drücken!');
+                    return;
+                }
+
+                this.addEvent(type, this.currentPosition);
+
+                const messages = {
+                    'turn_left': 'Links abbiegen markiert',
+                    'turn_right': 'Rechts abbiegen markiert',
+                    'u_turn': 'Wendepunkt markiert',
+                    'reverse_start': 'Rückwärtsfahrt markiert',
+                    'reverse_end': 'Ende Rückwärtsfahrt markiert'
+                };
+
+                const icons = {
+                    'turn_left': '↩️',
+                    'turn_right': '↪️',
+                    'u_turn': '🔄',
+                    'reverse_start': '⬅️',
+                    'reverse_end': '➡️'
+                };
+
+                // Add marker
+                L.marker(this.currentPosition, {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div style="background: #004E89; color: white; padding: 6px; border-radius: 50%; font-size: 16px;">${icons[type]}</div>`
+                    })
+                }).addTo(this.map);
+
+                this.speak(messages[type]);
+            },
+
+            addEvent(type, position) {
+                this.events.push({
+                    type: type,
+                    position: position,
+                    timestamp: new Date().toISOString()
+                });
+            },
+
+            undoLastAction() {
+                if (this.events.length === 0) {
+                    alert('Keine Aktion zum Rückgängig machen!');
+                    return;
+                }
+
+                const lastEvent = this.events.pop();
+                
+                // TODO: Remove marker from map
+                
+                this.speak('Letzte Aktion rückgängig gemacht');
+            },
+
+            // ==================== NAVIGATION MODE ====================
+            startNavigation(tour) {
+                this.activeTour = tour;
+                this.mode = 'navigating';
+                this.currentSegmentIndex = 0;
+                
+                this.hideAll();
+
+                // Ask if user wants navigation to start
+                const startEvent = tour.events.find(e => e.type === 'tour_start');
+                if (startEvent && confirm('Zum Touranfang navigieren?')) {
+                    // Simple direction info (real navigation would require routing API)
+                    const distance = this.calculateDistance(this.currentPosition, startEvent.position);
+                    alert(`Touranfang ist ca. ${(distance * 111).toFixed(1)} km entfernt`);
+                }
+
+                // Draw tour on map
+                this.drawTourRoute(tour);
+                
+                this.speak('Navigation gestartet');
+            },
+
+            drawTourRoute(tour) {
+                const colors = {
+                    'right': '#3498DB',
+                    'left': '#E74C3C',
+                    'both': '#9B59B6',
+                    'none': '#95A5A6'
+                };
+
+                // Draw all segments
+                tour.segments.forEach(segment => {
+                    L.polyline(segment.points, {
+                        color: colors[segment.tonPosition],
+                        weight: 4,
+                        opacity: 0.6,
+                        dashArray: '10, 10'
+                    }).addTo(this.map);
+                });
+
+                // Draw events
+                const icons = {
+                    'tour_start': '🟢',
+                    'tour_end': '🔴',
+                    'turn_left': '↩️',
+                    'turn_right': '↪️',
+                    'u_turn': '🔄',
+                    'reverse_start': '⬅️',
+                    'reverse_end': '➡️'
+                };
+
+                tour.events.forEach(event => {
+                    L.marker(event.position, {
+                        icon: L.divIcon({
+                            className: 'custom-marker',
+                            html: `<div style="background: rgba(0,0,0,0.7); color: white; padding: 6px; border-radius: 50%; font-size: 16px;">${icons[event.type]}</div>`
+                        })
+                    }).addTo(this.map);
+                });
+
+                // Fit map to tour
+                if (tour.segments.length > 0) {
+                    const allPoints = tour.segments.flatMap(s => s.points);
+                    this.map.fitBounds(allPoints);
+                }
+            },
+
+            updateNavigation() {
+                // Check upcoming events/maneuvers
+                const upcomingEvents = this.activeTour.events.filter(event => {
+                    const distance = this.calculateDistance(this.currentPosition, event.position);
+                    return distance < 0.05; // Within ~50m
+                });
+
+                upcomingEvents.forEach(event => {
+                    this.showNavAlert(event);
+                });
+            },
+
+            showNavAlert(event) {
+                const messages = {
+                    'turn_left': 'Links abbiegen',
+                    'turn_right': 'Rechts abbiegen',
+                    'u_turn': 'Hier wenden',
+                    'reverse_start': 'Rückwärtsfahrt',
+                    'reverse_end': 'Ende Rückwärtsfahrt'
+                };
+
+                const icons = {
+                    'turn_left': '↩️',
+                    'turn_right': '↪️',
+                    'u_turn': '🔄',
+                    'reverse_start': '⬅️',
+                    'reverse_end': '➡️'
+                };
+
+                if (messages[event.type]) {
+                    const alertEl = document.getElementById('navAlert');
+                    const iconEl = document.getElementById('navAlertIcon');
+                    const textEl = document.getElementById('navAlertText');
+
+                    iconEl.textContent = icons[event.type];
+                    textEl.textContent = messages[event.type];
+                    alertEl.classList.remove('hidden');
+
+                    this.speak(messages[event.type]);
+
+                    setTimeout(() => {
+                        alertEl.classList.add('hidden');
+                    }, 5000);
+                }
+            },
+
+            // ==================== STORAGE ====================
+            saveTour(tour) {
+                const tours = this.loadTours();
+                tours.push(tour);
+                localStorage.setItem('lkw_tours', JSON.stringify(tours));
+            },
+
+            loadTours() {
+                const data = localStorage.getItem('lkw_tours');
+                return data ? JSON.parse(data) : [];
+            },
+
+            renderTourList() {
+                const tours = this.loadTours();
+                const container = document.getElementById('tourListContent');
+
+                if (tours.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #95A5A6; padding: 40px;">Noch keine Touren gespeichert</p>';
+                    return;
+                }
+
+                container.innerHTML = tours.map(tour => `
+                    <div class="tour-item" onclick="app.selectTour(${tour.id})">
+                        <h4>${tour.name}</h4>
+                        <div class="tour-item-meta">
+                            <span>📅 ${new Date(tour.created).toLocaleDateString('de-DE')}</span>
+                            <span>🏷️ ${tour.type}</span>
+                            <span>📍 ${tour.segments.length} Segmente</span>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            selectTour(tourId) {
+                const tours = this.loadTours();
+                const tour = tours.find(t => t.id === tourId);
+                
+                if (tour) {
+                    this.startNavigation(tour);
+                }
+            },
+
+            // ==================== UTILITIES ====================
+            calculateDistance(point1, point2) {
+                const [lat1, lon1] = point1;
+                const [lat2, lon2] = point2;
+                
+                const R = 6371; // Earth radius in km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                          Math.sin(dLon/2) * Math.sin(dLon/2);
+                
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            },
+
+            speak(text) {
+                if (!this.speechEnabled) return;
+
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'de-DE';
+                    utterance.rate = 1.0;
+                    speechSynthesis.speak(utterance);
+                }
+            }
+        };
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            app.init();
+        });
+
+        // Note: Using Leaflet.js instead of Mapbox for this demo
+        // To use Mapbox (better performance), replace with:
+        // mapboxgl.accessToken = 'YOUR_TOKEN';
+        // this.map = new mapboxgl.Map({...});
+    </script>
+    
+    <!-- Using Leaflet as free alternative to Mapbox -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
+</html>
